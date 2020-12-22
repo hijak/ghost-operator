@@ -1,0 +1,114 @@
+---
+- name: Ghost pvc
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: '{{ ansible_operator_meta.name }}-data-pvc'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        storageClassName: '{{ storageclass }}'
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: '{{ storagesize }}'
+
+- name: start ghost
+  community.kubernetes.k8s:
+    definition:
+      kind: Deployment
+      apiVersion: apps/v1
+      metadata:
+        name: '{{ ansible_operator_meta.name }}-ghost'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        replicas: "{{size}}"
+        selector:
+          matchLabels:
+            app: '{{ ansible_operator_meta.name }}-ghost'
+        template:
+          metadata:
+            labels:
+              app: '{{ ansible_operator_meta.name }}-ghost'
+          spec:
+            containers:
+            - name: ghost
+              env:
+              - name: url
+                value: 'https://{{ hostname }}'
+              image: "docker.io/ghost:{{ container_tag }}"
+              livenessProbe:
+                tcpSocket:
+                  port: 2368
+                initialDelaySeconds: 15
+                timeoutSeconds: 10
+              readinessProbe:
+                tcpSocket:
+                  port: 2368
+                initialDelaySeconds: 15
+                timeoutSeconds: 10
+              ports:
+                - containerPort: 2368
+                  name: web
+              volumeMounts:
+              - mountPath: /var/lib/ghost/content
+                name: '{{ ansible_operator_meta.name }}-data-pvc'
+              - mountPath: /tmp
+                name: tmp-dir
+            volumes:
+              - name: '{{ ansible_operator_meta.name }}-data-pvc'
+                persistentVolumeClaim:
+                  claimName: '{{ ansible_operator_meta.name }}-data-pvc'
+              - name: tmp-dir
+                emptyDir: {}
+
+- name: Ghost service
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: '{{ ansible_operator_meta.name }}-ghost-svc'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        labels:
+          app: '{{ ansible_operator_meta.name }}-ghost'
+      spec:
+        selector:
+          app: '{{ ansible_operator_meta.name }}-ghost'
+        type: ClusterIP
+        ports:
+        - protocol: TCP
+          targetPort: 2368
+          name: web
+          port: 2368
+
+- name: Ghost ingress
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: extensions/v1beta1
+      kind: Ingress
+      metadata:
+        annotations:
+          cert-manager.io/cluster-issuer: '{{ certmanager_issuer }}'
+        name: '{{ ansible_operator_meta.name }}-ingress'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+        labels:
+          app: '{{ ansible_operator_meta.name }}-ghost'
+      spec:
+        tls:
+        - hosts:
+          - '{{ hostname }}'
+          secretName: '{{ hostname }}-ssl'
+        rules:
+        - host: '{{ hostname }}'
+          http:
+            paths:
+            - path: /
+              backend:
+                serviceName: '{{ ansible_operator_meta.name }}-ghost-svc'
+                servicePort: web

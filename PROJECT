@@ -1,0 +1,8 @@
+domain: exnet.systems
+layout: ansible.sdk.operatorframework.io/v1
+projectName: ghost
+resources:
+- group: apps
+  kind: Ghost
+  version: v1alpha1
+version: 3-alpha

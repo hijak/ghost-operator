@@ -1,0 +1,6 @@
+---
+# defaults file for Ghost
+size: 1
+container_tag: 3-alpine
+storageclass: local-path
+storagesize: 2Gi

@@ -1,0 +1,11 @@
+apiVersion: apps.exnet.systems/v1alpha1
+kind: Ghost
+metadata:
+  name: ghost-sample
+spec:
+  size: 1 # replica size
+  hostname: example.com # url env
+  container_tag: 3-alpine # ghost container tags
+  storageclass: local-path # pvc storage class
+  storagesize: 2Gi # storage class size for /var/lib/ghost/content mount
+  certmanager_issuer: letsencrypt-issuer # Clusterissuer for letsencrypt
