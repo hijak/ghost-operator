@@ -29,7 +29,7 @@ jobs:
           push: true
           tags: |
             jcowey/ghost-operator:latest
-            jcowey/ghost-operator:${CI_SHA_SHORT}
+            jcowey/ghost-operator:$CI_SHA_SHORT
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
