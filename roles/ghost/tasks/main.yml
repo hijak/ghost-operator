@@ -1,5 +1,6 @@
 ---
-- name: Ghost pvc
+- name: Ghost pvc rwx
+  when: storageclass_accessmodes == "rwx"
   community.kubernetes.k8s:
     state: present
     definition:
@@ -10,10 +11,30 @@
         namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
         storageClassName: '{{ storageclass }}'
+        accessModes:
+          - ReadWriteMany
         resources:
           requests:
             storage: '{{ storagesize }}'
-
+            
+- name: Ghost pvc rwo
+  when: storageclass_accessmodes == "rwo"
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      kind: PersistentVolumeClaim
+      apiVersion: v1
+      metadata:
+        name: '{{ ansible_operator_meta.name }}-data-pvc'
+        namespace: '{{ ansible_operator_meta.namespace }}'
+      spec:
+        storageClassName: '{{ storageclass }}'
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: '{{ storagesize }}'
+            
 - name: start ghost
   community.kubernetes.k8s:
     definition:
