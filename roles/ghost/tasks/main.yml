@@ -10,8 +10,6 @@
         namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
         storageClassName: '{{ storageclass }}'
-        accessModes:
-          - ReadWriteMany
         resources:
           requests:
             storage: '{{ storagesize }}'
