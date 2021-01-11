@@ -62,12 +62,12 @@
               livenessProbe:
                 tcpSocket:
                   port: 2368
-                initialDelaySeconds: 15
+                initialDelaySeconds: 25
                 timeoutSeconds: 10
               readinessProbe:
                 tcpSocket:
                   port: 2368
-                initialDelaySeconds: 15
+                initialDelaySeconds: 25
                 timeoutSeconds: 10
               ports:
                 - containerPort: 2368
