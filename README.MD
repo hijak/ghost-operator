@@ -26,6 +26,7 @@ spec:
   hostname: example.com # url env and ingress hostname
   container_tag: 3-alpine # ghost container tags
   storageclass: local-path # pvc storage class
+  storageclass_accessmode: rwo # rwo or rwx
   storagesize: 2Gi # storage class size for /var/lib/ghost/content mount
   certmanager_issuer: letsencrypt-issuer # Clusterissuer for letsencrypt
 ```
