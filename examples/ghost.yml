@@ -9,3 +9,4 @@ spec:
   storageclass: local-path # pvc storage class
   storagesize: 2Gi # storage class size for /var/lib/ghost/content mount
   certmanager_issuer: letsencrypt-issuer # Clusterissuer for letsencrypt
+  storageclass_accessmodes: rwo # rwo Readwriteonce or rwx Readwritemany
