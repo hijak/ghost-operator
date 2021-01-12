@@ -17,7 +17,7 @@ rules:
       - pods/exec
       - pods/log
       - persistentvolumeclaims
-      - ingresses
+      - networking.k8s.io
     verbs:
       - "*"
   - apiGroups:
@@ -27,6 +27,7 @@ rules:
       - daemonsets
       - replicasets
       - statefulsets
+      - ingresses
     verbs:
       - create
       - delete
