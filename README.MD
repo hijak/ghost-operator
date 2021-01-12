@@ -22,7 +22,7 @@ metadata:
   name: ghost-sample # name used in resources
   namespace: default
 spec:
-  size: 1 # replica size
+  size: 1 # replica size you will have to choose a rwx storage class if you want replicas
   hostname: example.com # url env and ingress hostname
   container_tag: 3-alpine # ghost container tags
   storageclass: local-path # pvc storage class
@@ -34,6 +34,8 @@ spec:
 ### Prerequisites
 
 This assumes you have a working ingress, a storage class avaialble for pvc and a working cert-manager install
+
+Kubernetes version at least 1.17
 
 ### Installing
 

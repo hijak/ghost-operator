@@ -44,7 +44,7 @@
         name: '{{ ansible_operator_meta.name }}-ghost'
         namespace: '{{ ansible_operator_meta.namespace }}'
       spec:
-        replicas: "{{size}}"
+        replicas: '{{size}}'
         selector:
           matchLabels:
             app: '{{ ansible_operator_meta.name }}-ghost'
@@ -91,7 +91,7 @@
       apiVersion: v1
       kind: Service
       metadata:
-        name: '{{ ansible_operator_meta.name }}-ghost-svc'
+        name: '{{ ansible_operator_meta.name }}-svc'
         namespace: '{{ ansible_operator_meta.namespace }}'
         labels:
           app: '{{ ansible_operator_meta.name }}-ghost'
@@ -109,25 +109,26 @@
   community.kubernetes.k8s:
     state: present
     definition:
-      apiVersion: extensions/v1beta1
-      kind: Ingress
-      metadata:
-        annotations:
-          cert-manager.io/cluster-issuer: '{{ certmanager_issuer }}'
-        name: '{{ ansible_operator_meta.name }}-ingress'
-        namespace: '{{ ansible_operator_meta.namespace }}'
-        labels:
-          app: '{{ ansible_operator_meta.name }}-ghost'
-      spec:
-        tls:
-        - hosts:
-          - '{{ hostname }}'
-          secretName: '{{ hostname }}-ssl'
-        rules:
-        - host: '{{ hostname }}'
-          http:
-            paths:
-            - path: /
-              backend:
-                serviceName: '{{ ansible_operator_meta.name }}-ghost-svc'
-                servicePort: web
+       apiVersion: networking.k8s.io/v1
+       kind: Ingress
+       metadata:
+         name: '{{ ansible_operator_meta.name }}-ingress'
+         namespace: '{{ ansible_operator_meta.namespace }}'
+         annotations:
+           cert-manager.io/cluster-issuer: '{{ certmanager_issuer }}'
+       spec:
+         tls:
+         - hosts:
+             - '{{ hostname }}'
+           secretName: '{{ hostname }}-ssl'
+         rules:
+         - host: '{{ hostname }}'      
+           http:
+             paths:
+             - path: /
+               pathType: Prefix
+               backend:
+                 service:
+                   name: '{{ ansible_operator_meta.name }}-svc'
+                   port:
+                     number: 2368
