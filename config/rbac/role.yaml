@@ -10,6 +10,7 @@ rules:
   - apiGroups:
       - ""
       - extensions
+      - networking.k8s.io
     resources:
       - secrets
       - services
@@ -17,7 +18,7 @@ rules:
       - pods/exec
       - pods/log
       - persistentvolumeclaims
-      - networking.k8s.io
+      - ingresses
     verbs:
       - "*"
   - apiGroups:
@@ -27,7 +28,6 @@ rules:
       - daemonsets
       - replicasets
       - statefulsets
-      - ingresses
     verbs:
       - create
       - delete
@@ -53,3 +53,5 @@ rules:
       - patch
       - update
       - watch
+E0112 10:06:00.410573       7 reflector.go:127] pkg/mod/k8s.io/client-go@v0.19.4/tools/cache/reflector.go:156: Failed to watch networking.k8s.io/v1, Kind=Ingress: failed to list networking.k8s.io/v1, Kind=Ingress: ingresses.networking.k8s.io is forbidden: User "system:serviceaccount:ghost-system:default" cannot list resource "ingresses" in API group "networking.k8s.io" at the cluster scope
+E0112 10:07:19.998385       7 reflector.go:127] pkg/mod/k8s.io/client-go@v0.19.4/tools/cache/reflector.go:156: Failed to watch networking.k8s.io/v1, Kind=Ingress: failed to list networking.k8s.io/v1, Kind=Ingress: ingresses.networking.k8s.io is forbidden: User "system:serviceaccount:ghost-system:default" cannot list resource "ingresses" in API group "networking.k8s.io" at the cluster scope
